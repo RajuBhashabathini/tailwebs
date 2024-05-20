@@ -1,9 +1,11 @@
+//? Importing the User Defined Files
 import "./App.css";
 import Router from "./utils/Router.js";
 
+//? Main application starts here
 function App() {
   return (
-    <div className="h-[100%]  w-screen border border-blue-500">
+    <div className=" w-screen h-screen ">
       <Router />
     </div>
   );

@@ -1,6 +1,7 @@
 import { BookOutlined, ReadOutlined, UserOutlined } from "@ant-design/icons";
-import { Divider, Input, Typography } from "antd";
+import { DatePicker, Divider, Input, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -15,7 +16,7 @@ const EditStudentDetails = ({
 
   const [userNameError, setUserNameError] = useState(false);
   const [subjectNameError, setSubjectNameErrorError] = useState(false);
-  const [marksheetError, setMarksheetError] = useState(false);
+  const [markSheetError, setMarkSheetError] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,34 +26,33 @@ const EditStudentDetails = ({
   };
 
   const editValidation = () => {
-    userDetails.name === "" ||
-    userDetails.name === undefined ||
-    userDetails.name === "null"
-      ? setUserNameError(true)
-      : setUserNameError(false);
+    userDetails.name ? setUserNameError(false) : setUserNameError(true);
 
-    userDetails.subject === "" ||
-    userDetails.subject === undefined ||
-    userDetails.subject === "null"
-      ? setSubjectNameErrorError(true)
-      : setSubjectNameErrorError(false);
+    userDetails.subject
+      ? setSubjectNameErrorError(false)
+      : setSubjectNameErrorError(true);
 
-    userDetails.mark === "" ||
-    userDetails.mark === undefined ||
-    userDetails.mark === "null"
-      ? setMarksheetError(true)
-      : setMarksheetError(false);
+    userDetails.mark ? setMarkSheetError(false) : setMarkSheetError(true);
 
-    if (
-      userDetails.name !== "" &&
-      userDetails.subject !== "" &&
-      userDetails.mark !== ""
-    ) {
+    if (userDetails.name && userDetails.subject && userDetails.mark) {
       action === "edit" ? onEditApply(userDetails) : onAddApply(userDetails);
     }
   };
 
+  const onDateChange = (date, dateString) => {
+    console.log("date, dateString :", date, dateString);
+    let userDetailsCopy = { ...userDetails };
+    userDetailsCopy["date"] = dateString;
+    setUserDetails(userDetailsCopy);
+  };
+
   useEffect(() => {
+    let addDate = new Date();
+    // addDate = dayjs(addDate, "DD-MM-YYYY");
+    console.log("addDate :", addDate);
+
+    console.log("addDate :", addDate);
+    console.log("action", action);
     action === "edit"
       ? setUserDetails(userDetailsProps)
       : setUserDetails({
@@ -60,8 +60,11 @@ const EditStudentDetails = ({
           name: "",
           subject: "",
           mark: "",
+          date: addDate,
         });
   }, [userDetailsProps]);
+
+  console.log("userDetails", userDetails);
 
   return (
     <div>
@@ -122,9 +125,17 @@ const EditStudentDetails = ({
             </>
           }
         />
-        {marksheetError && (
+        {markSheetError && (
           <Text className="text-red-400">Please Enter Valid Marks</Text>
         )}
+        <label>Date</label>
+        {console.log("userDetails.date", userDetails.date)}
+        <DatePicker
+          name="date"
+          format={"DD-MM-YYYY"}
+          value={dayjs(userDetails.date, "DD-MM-YYYY")}
+          onChange={onDateChange}
+        />
 
         <button
           onClick={() => {
