@@ -2,7 +2,7 @@ import { Badge, Calendar, Modal } from "antd";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import NavbarComponent from "../components/NavbarComponent";
+// import NavbarComponent from "../components/NavbarComponent";
 
 const CalenderEvents = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,7 +10,7 @@ const CalenderEvents = () => {
   const studentDetailsFromRedux = useSelector(
     (state) => state.studentsDataSlice.value
   );
-  console.log("count 1122:", studentDetailsFromRedux);
+  const [modalHeaderDate, setModalHeaderDate] = useState("");
 
   useEffect(() => {
     setStudentDetails(studentDetailsFromRedux);
@@ -47,6 +47,7 @@ const CalenderEvents = () => {
     let listData = studentDetails.filter((ele, index) => ele.date === date);
     setUserData(listData);
   };
+
   const monthCellRender = (value) => {
     const num = getMonthData(value);
     return num ? (
@@ -56,6 +57,7 @@ const CalenderEvents = () => {
       </div>
     ) : null;
   };
+
   const dateCellRender = (value) => {
     const listData = getListData(value);
     return (
@@ -84,41 +86,46 @@ const CalenderEvents = () => {
   };
   return (
     <div className="p-10">
-      <NavbarComponent />
+      {/* <NavbarComponent /> */}
       <Calendar
         className="border border-black p-3"
         fullscreen={true}
         cellRender={cellRender}
         onSelect={(date, { source }) => {
           if (source === "date") {
-            console.log("Panel Select:", format(new Date(date), "dd-MM-yyyy"));
+            setModalHeaderDate(format(new Date(date), "dd-MM-yyyy"));
             filterUserData(format(new Date(date), "dd-MM-yyyy"));
             showModal();
           }
         }}
       />
       <Modal
-        title="Student Details"
+        title={`Student Details on : ${modalHeaderDate} `}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
       >
-        {userData.map((ele, index) => {
-          return (
-            <div key={ele.key} className="flex flex-col gap-1">
-              <span>
-                Name :<label className="font-bold">{ele.name}</label>
-              </span>
-              <span>
-                Subject :<label className="font-bold">{ele.subject}</label>
-              </span>
-              <span>
-                Marks: <label className="font-bold">{ele.mark}</label>
-              </span>
-            </div>
-          );
-        })}
+        {userData && userData.length > 0 ? (
+          userData.map((ele, index) => {
+            return (
+              <div key={ele.key} className="flex flex-col gap-1 p-3 my-2 ">
+                <span>
+                  Name :<label className="font-bold mx-2">{ele.name}</label>
+                </span>
+                <span>
+                  Subject :
+                  <label className="font-bold mx-2">{ele.subject}</label>
+                </span>
+                <span>
+                  Marks: <label className="font-bold mx-2">{ele.mark}</label>
+                </span>
+              </div>
+            );
+          })
+        ) : (
+          <>No Data Available</>
+        )}
       </Modal>
     </div>
   );

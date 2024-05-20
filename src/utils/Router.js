@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-const CalenderEvents = lazy(() => import("../pages/CalenderEvents"));
+const CalenderEvents = lazy(() => import("../components/CalenderEvents"));
 const DashBoard = lazy(() => import("../pages/DashBoard"));
 const SignIn = lazy(() => import("../pages/SignIn"));
 
@@ -15,14 +15,14 @@ const Router = () => {
         </Suspense>
       ),
     },
-    {
-      path: "/calender",
-      element: (
-        <Suspense loading="CalenderEvents Component is Loading">
-          <CalenderEvents />,
-        </Suspense>
-      ),
-    },
+    // {
+    //   path: "/calender",
+    //   element: (
+    //     <Suspense loading="CalenderEvents Component is Loading">
+    //       <CalenderEvents />,
+    //     </Suspense>
+    //   ),
+    // },
     {
       path: "/dashboard",
       element: (

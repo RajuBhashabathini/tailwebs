@@ -9,20 +9,14 @@ export const studentsDataSlice = createSlice({
   name: "studentDetails",
   initialState,
   reducers: {
-    addUserData: (state) => {
-      state.value += 1;
-    },
-    editUserData: (state) => {
-      state.value -= 1;
-    },
-    deleteUserData: (state, action) => {
-      state.value += action.payload;
+    studentData: (state, action) => {
+      console.log("action in studentData ", state, action);
+      state.value = action.payload;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addUserData, editUserData, deleteUserData } =
-  studentsDataSlice.actions;
+export const { studentData } = studentsDataSlice.actions;
 
 export default studentsDataSlice.reducer;

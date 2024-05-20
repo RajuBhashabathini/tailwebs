@@ -1,23 +1,18 @@
 //? Importing Libraries
-import { DownCircleOutlined } from "@ant-design/icons";
-import { Modal, Popover, Table, Typography } from "antd";
+import { Modal, Table } from "antd";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 //? Importing the User Defined Files
+import CalenderEvents from "../components/CalenderEvents";
 import EditStudentDetails from "../components/EditStudentDetails";
 import NavbarComponent from "../components/NavbarComponent";
-import dataSource from "../mockData/dataSource";
-import CalenderEvents from "./CalenderEvents";
 import useDashBoard from "../customHooks/useDashBoard";
 
-import { useDispatch } from "react-redux";
-
 //? De-structuring Libraries
-const { Text } = Typography;
 
 const DashBoard = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const {
     isEditModalOpen,
     actionType,
@@ -46,10 +41,11 @@ const DashBoard = () => {
             <button
               className="border w-[15%] bg-black text-white borer-black p-1 "
               onClick={() => {
-                navigate("/calender");
+                // navigate("/calender");
+                setOpenCalender((prev) => !prev);
               }}
             >
-              {openCalender ? "Close Calender" : "Open Calender"}
+              {openCalender ? "Close Calender View" : "Open Calender View"}
             </button>
             {openCalender && <CalenderEvents />}
             <Table
@@ -60,7 +56,7 @@ const DashBoard = () => {
             />
             <button
               onClick={() => {
-                showEditModal("add");
+                showEditModal("", "add");
               }}
               className="mt-4 w-[15%] items-center justify-center  flex  text-white bg-black p-3"
             >
@@ -68,28 +64,35 @@ const DashBoard = () => {
             </button>
           </div>
           <div>
-            <Modal
-              title={
-                actionType === "edit" ? "Edit User Details" : "Add user Details"
-              }
-              open={isEditModalOpen}
-              onCancel={handleEditCancel}
-              footer={null}
-            >
-              <EditStudentDetails
-                userDetailsProps={
-                  tableData.filter((ele) => ele.key === editOrDeleteId)[0]
+            {isEditModalOpen ? (
+              <Modal
+                title={
+                  actionType === "edit"
+                    ? "Edit User Details"
+                    : "Add user Details"
                 }
-                action={actionType}
-                onEditApply={editStudentDetailsFunc}
-                onAddApply={addUserToTable}
-                keyPropsForNewUser={
-                  tableData && tableData.length > 0
-                    ? +tableData[tableData.length - 1]["key"] + 1
-                    : 1
-                }
-              />
-            </Modal>
+                open={isEditModalOpen}
+                onCancel={handleEditCancel}
+                footer={null}
+              >
+                <EditStudentDetails
+                  userDetailsProps={
+                    actionType === "edit"
+                      ? tableData.find((ele) => ele.key === editOrDeleteId)
+                      : null
+                  }
+                  isEditModalOpen={isEditModalOpen}
+                  action={actionType}
+                  onEditApply={editStudentDetailsFunc}
+                  onAddApply={addUserToTable}
+                  keyPropsForNewUser={
+                    tableData && tableData.length > 0
+                      ? +tableData[tableData.length - 1]["key"] + 1
+                      : 1
+                  }
+                />
+              </Modal>
+            ) : null}
           </div>
           <div>
             <Modal

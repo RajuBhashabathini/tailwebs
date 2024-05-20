@@ -1,14 +1,20 @@
 import { DownCircleOutlined } from "@ant-design/icons";
 import { Popover } from "antd";
-import React, { useState } from "react";
-import dataSource from "../mockData/dataSource";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { studentData } from "../utils/Redux/slices/studentsDataSlice";
 
 const useDashBoard = () => {
+  const tableDataFromRedux = useSelector(
+    (state) => state.studentsDataSlice.value
+  );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [tableData, setTableData] = useState(dataSource);
+  const [tableData, setTableData] = useState(tableDataFromRedux);
   const [editOrDeleteId, setEditOrDeleteId] = useState("");
+
+  const dispatch = useDispatch();
 
   const columns = [
     {
@@ -65,12 +71,20 @@ const useDashBoard = () => {
     },
   ];
 
+  useEffect(() => {
+    setTableData(tableDataFromRedux);
+  }, [tableDataFromRedux]);
+
   const showEditModal = (keyProps, actionProps) => {
-    console.log("keyProps, actionProps :", keyProps, actionProps);
     setActionType(actionProps);
     setIsEditModalOpen(true);
     setIsDeleteModalOpen(false);
-    setEditOrDeleteId(keyProps);
+    setEditOrDeleteId(keyProps ? keyProps : "");
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    setEditOrDeleteId("");
   };
 
   const showDeleteModal = (keyProps) => {
@@ -78,39 +92,13 @@ const useDashBoard = () => {
     setIsEditModalOpen(false);
     setEditOrDeleteId(keyProps);
   };
-  const handleEditCancel = () => {
-    setIsEditModalOpen(false);
-    setEditOrDeleteId("");
-  };
-
-  const addUserToTable = (e) => {
-    console.log("e from the data", e);
-    let tableDataCopy = [...tableData];
-    let checkUser = tableDataCopy.filter(
-      (ele, index) => ele.name === e.name && ele.subject === e.subject
-    );
-    let existingId = checkUser && checkUser.length > 0 && checkUser[0].key;
-
-    if (existingId) {
-      let copyData = tableData.map((ele, id) =>
-        ele.key === existingId ? { ...ele, mark: e.mark } : ele
-      );
-      setTableData(copyData);
-    } else {
-      tableDataCopy.push(e);
-      setTableData(tableDataCopy);
-    }
-
-    setIsEditModalOpen(false);
-    setEditOrDeleteId("");
-  };
 
   const handleDeleteOk = () => {
     let tableDataCopy = tableData.filter(
       (ele) => Number(ele.key) !== Number(editOrDeleteId)
     );
     setTableData(tableDataCopy);
-    useDispatch(addU);
+    dispatch(studentData(tableDataCopy));
     setIsDeleteModalOpen(false);
     setEditOrDeleteId("");
   };
@@ -120,11 +108,34 @@ const useDashBoard = () => {
     setEditOrDeleteId("");
   };
 
+  const addUserToTable = (e) => {
+    let tableDataCopy = [...tableData];
+    let checkUser = tableDataCopy.filter(
+      (ele, index) => ele.name === e.name && ele.subject === e.subject
+    );
+    let existingId = checkUser && checkUser.length > 0 && checkUser[0].key;
+
+    if (existingId) {
+      let copyData = tableData.map((ele, id) =>
+        ele.key === existingId ? { ...ele, date: e.date, mark: e.mark } : ele
+      );
+      setTableData(copyData);
+      dispatch(studentData(copyData));
+    } else {
+      tableDataCopy.push(e);
+      setTableData(tableDataCopy);
+      dispatch(studentData(tableDataCopy));
+    }
+    setIsEditModalOpen(false);
+    setEditOrDeleteId("");
+  };
+
   const editStudentDetailsFunc = (e) => {
     let tableDataCopy = tableData.map((ele, index) =>
       ele.key === e.key ? e : ele
     );
     setTableData(tableDataCopy);
+    dispatch(studentData(tableDataCopy));
     setIsEditModalOpen(false);
     setEditOrDeleteId("");
   };

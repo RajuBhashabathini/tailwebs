@@ -11,12 +11,21 @@ const EditStudentDetails = ({
   onEditApply,
   onAddApply,
   keyPropsForNewUser,
+  isEditModalOpen,
 }) => {
-  const [userDetails, setUserDetails] = useState("");
+  const initialUserDetails = {
+    key: String(keyPropsForNewUser),
+    name: "",
+    subject: "",
+    mark: "",
+    date: "",
+  };
+  const [userDetails, setUserDetails] = useState(initialUserDetails);
 
   const [userNameError, setUserNameError] = useState(false);
   const [subjectNameError, setSubjectNameErrorError] = useState(false);
   const [markSheetError, setMarkSheetError] = useState(false);
+  const [dateError, setDateError] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,45 +35,38 @@ const EditStudentDetails = ({
   };
 
   const editValidation = () => {
-    userDetails.name ? setUserNameError(false) : setUserNameError(true);
+    setUserNameError(!userDetails.name);
+    setSubjectNameErrorError(!userDetails.subject);
+    setMarkSheetError(!userDetails.mark);
+    setDateError(!userDetails.date);
 
-    userDetails.subject
-      ? setSubjectNameErrorError(false)
-      : setSubjectNameErrorError(true);
-
-    userDetails.mark ? setMarkSheetError(false) : setMarkSheetError(true);
-
-    if (userDetails.name && userDetails.subject && userDetails.mark) {
+    if (
+      userDetails.name &&
+      userDetails.subject &&
+      userDetails.mark &&
+      userDetails.date
+    ) {
       action === "edit" ? onEditApply(userDetails) : onAddApply(userDetails);
     }
   };
 
   const onDateChange = (date, dateString) => {
-    console.log("date, dateString :", date, dateString);
     let userDetailsCopy = { ...userDetails };
     userDetailsCopy["date"] = dateString;
     setUserDetails(userDetailsCopy);
   };
 
   useEffect(() => {
-    let addDate = new Date();
-    // addDate = dayjs(addDate, "DD-MM-YYYY");
-    console.log("addDate :", addDate);
+    if (isEditModalOpen) {
+      if (action === "edit" && userDetailsProps) {
+        setUserDetails(userDetailsProps);
+      } else if (action === "add") {
+        setUserDetails(initialUserDetails);
+      }
+    }
+  }, [action, userDetailsProps, keyPropsForNewUser, isEditModalOpen]);
 
-    console.log("addDate :", addDate);
-    console.log("action", action);
-    action === "edit"
-      ? setUserDetails(userDetailsProps)
-      : setUserDetails({
-          key: String(keyPropsForNewUser),
-          name: "",
-          subject: "",
-          mark: "",
-          date: addDate,
-        });
-  }, [userDetailsProps]);
 
-  console.log("userDetails", userDetails);
 
   return (
     <div>
@@ -129,13 +131,19 @@ const EditStudentDetails = ({
           <Text className="text-red-400">Please Enter Valid Marks</Text>
         )}
         <label>Date</label>
-        {console.log("userDetails.date", userDetails.date)}
         <DatePicker
           name="date"
           format={"DD-MM-YYYY"}
-          value={dayjs(userDetails.date, "DD-MM-YYYY")}
+          value={
+            userDetails && userDetails.date
+              ? dayjs(userDetails.date, "DD-MM-YYYY")
+              : ""
+          }
           onChange={onDateChange}
         />
+        {dateError && (
+          <Text className="text-red-400">Please Enter Valid Date</Text>
+        )}
 
         <button
           onClick={() => {

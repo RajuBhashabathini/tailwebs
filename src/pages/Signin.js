@@ -24,7 +24,6 @@ const SignIn = () => {
   });
 
   const changePasswordVisibility = (type) => {
-    console.log("type :", type);
     setShowPassword(type);
   };
 
